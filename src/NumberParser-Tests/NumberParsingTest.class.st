@@ -97,11 +97,11 @@ NumberParsingTest >> testFloatFromStringAsNumber [
 	"This covers parsing in Number>>readFrom:"
 
 	| aFloat |
-	aFloat := '10r-12.3456' asNumber.
+	aFloat := Number readFromString: '10r-12.3456'.
 	self assert: -12.3456 equals: aFloat.
-	aFloat := '10r-12.3456e2' asNumber.
+	aFloat := Number readFromString: '10r-12.3456e2'.
 	self assert: -1234.56 equals: aFloat.
-	aFloat := '10r-12.3456d2' asNumber.
+	aFloat := Number readFromString: '10r-12.3456d2'.
 	self assert: -1234.56 equals: aFloat.
 	aFloat := '10r-12.3456q2' asNumber.
 	self assert: -1234.56 equals: aFloat.
@@ -116,11 +116,11 @@ NumberParsingTest >> testFloatFromStringWithExponent [
 	"This covers parsing in Number>>readFrom:"
 
 	| aFloat |
-	aFloat := '1.0e-14' asNumber.
+	aFloat := Number readFromString: '1.0e-14'.
 	self assert: 1.0e-14 equals: aFloat.
-	aFloat := '1.0e-14 1' asNumber.
+	aFloat := Number readFromString: '1.0e-14 1'.
 	self assert: 1.0e-14 equals: aFloat.
-	aFloat := '1.0e-14e' asNumber.
+	aFloat := Number readFromString: '1.0e-14e'.
 	self assert: 1.0e-14 equals: aFloat.
 	aFloat := '1.0e14e' asNumber.
 	self assert: 1.0e14 equals: aFloat
@@ -134,8 +134,9 @@ NumberParsingTest >> testFloatReadWithRadix [
 	and the exponent is always treated as base 10 (not the base indicated in the
 	radix prefix). I am not sure if this is a feature, a bug, or both, but the
 	Squeak behavior is documented in this test. -dtl"
+
 	| aNumber rs |
-	aNumber := '2r1.0101e9' asNumber.
+	aNumber := Number readFromString: '2r1.0101e9'.
 	self assert: 672.0 equals: aNumber.
 	self assert: (Number readFrom: '2r1.0101e9') equals: 1.3125 * (2 raisedTo: 9).
 	rs := '2r1.0101e9e9' readStream.
@@ -148,13 +149,13 @@ NumberParsingTest >> testIntegerFromString [
 	"This covers parsing in Number>>readFrom:
 	Trailing decimal points should be ignored."
 
-	self assert: '123' asNumber equals: 123.
-	self assert: '-123' asNumber equals: -123.
-	self assert: '123.' asNumber equals: 123.
-	self assert: '-123.' asNumber equals: -123.
-	self assert: '123This is not to be read' asNumber equals: 123.
-	self assert: '123s could be confused with a ScaledDecimal' asNumber equals: 123.
-	self assert: '123e could be confused with a Float' asNumber equals: 123
+	self assert: (Number readFromString: '123') equals: 123.
+	self assert: (Number readFromString: '-123') equals: -123.
+	self assert: (Number readFromString: '123.') equals: 123.
+	self assert: (Number readFromString: '-123.') equals: -123.
+	self assert: (Number readFromString: '123This is not to be read') equals: 123.
+	self assert: (Number readFromString: '123s could be confused with a ScaledDecimal') equals: 123.
+	self assert: (Number readFromString: '123e could be confused with a Float') equals: 123
 ]
 
 { #category : 'tests - Integer' }
@@ -193,7 +194,7 @@ NumberParsingTest >> testIntegerReadWithRadix [
 	Squeak behavior is documented in this test. -dtl"
 
 	| aNumber rs |
-	aNumber := '2r1e26' asNumber.
+	aNumber := Number readFromString: '2r1e26'.
 	self assert: 67108864 equals: aNumber.
 	self assert: (Number readFrom: '2r1e26') equals: (2 raisedTo: 26).
 	rs := '2r1e26eee' readStream.
