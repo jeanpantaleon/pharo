@@ -687,7 +687,7 @@ String >> asLowercase [
 { #category : 'converting' }
 String >> asNumber [
 	"Answer the Number created by interpreting the receiver as the string representation of a number."
-
+	self deprecated: 'Use Number>>#readFromString: instead.'.
 	^ Number readFromString: self
 ]
 
