@@ -1882,21 +1882,28 @@ String >> indexOfWideCharacterFrom: start to: end [
 { #category : 'converting' }
 String >> initialIntegerOrNil [
 	"Answer the integer represented by the leading digits of the receiver, or nil if the receiver does not begin with a digit"
+
 	"'234Whoopie' initialIntegerOrNil >>> 234"
+
 	"'wimpy' initialIntegerOrNil >>> nil"
+
 	"'234' initialIntegerOrNil >>> 234"
+
 	"'2N' initialIntegerOrNil >>> 2"
+
 	"'2' initialIntegerOrNil >>> 2"
+
 	"'  89Ten ' initialIntegerOrNil >>> nil"
+
 	"'78 92' initialIntegerOrNil >>> 78"
+
 	"'3.1415' initialIntegerOrNil >>> 3"
 
 	| firstNonDigit |
-	(self size = 0 or: [ self first isDigit not ])
-		ifTrue: [ ^ nil ].
-	firstNonDigit := (self findFirst: [ :m | m isDigit not ]).
+	(self size = 0 or: [ self first isDigit not ]) ifTrue: [ ^ nil ].
+	firstNonDigit := self findFirst: [ :m | m isDigit not ].
 	firstNonDigit = 0 ifTrue: [ firstNonDigit := self size + 1 ].
-	^ (self copyFrom: 1  to: (firstNonDigit - 1)) asNumber
+	^ Number readFromString: (self copyFrom: 1 to: firstNonDigit - 1)
 ]
 
 { #category : 'testing' }

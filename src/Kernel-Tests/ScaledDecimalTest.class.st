@@ -27,7 +27,7 @@ ScaledDecimalTest >> testAsNumber [
 	"Ensure no loss of precision"
 
 	| sd |
-	sd := '1.40s2' asNumber.
+	sd := Number readFromString: '1.40s2'.
 	self assert: ScaledDecimal identicalTo: sd class.
 	self assert: sd scale equals: 2.
 	self assert: '1.40s2' equals: sd printString
@@ -37,7 +37,7 @@ ScaledDecimalTest >> testAsNumber [
 ScaledDecimalTest >> testAsNumberNegatedWithoutDecimalPoint [
 
 	| sd |
-	sd := '-123s0' asNumber.
+	sd := Number readFromString: '-123s0'.
 	self assert: ScaledDecimal identicalTo: sd class.
 	self assert: sd scale equals: 0.
 	self assert: '-123s0' equals: sd printString
@@ -47,7 +47,7 @@ ScaledDecimalTest >> testAsNumberNegatedWithoutDecimalPoint [
 ScaledDecimalTest >> testAsNumberNegatedWithoutDecimalPoint2 [
 
 	| sd |
-	sd := '-123s2' asNumber.
+	sd := Number readFromString: '-123s2'.
 	self assert: ScaledDecimal identicalTo: sd class.
 	self assert: sd scale equals: 2.
 	self assert: '-123.00s2' equals: sd printString
@@ -57,7 +57,7 @@ ScaledDecimalTest >> testAsNumberNegatedWithoutDecimalPoint2 [
 ScaledDecimalTest >> testAsNumberWithExtendedScale [
 
 	| sd |
-	sd := '123s2' asNumber.
+	sd := Number readFromString: '123s2'.
 	self assert: ScaledDecimal identicalTo: sd class.
 	self assert: sd scale equals: 2.
 	self assert: '123.00s2' equals: sd printString
@@ -67,7 +67,7 @@ ScaledDecimalTest >> testAsNumberWithExtendedScale [
 ScaledDecimalTest >> testAsNumberWithRadix [
 
 	| sd |
-	sd := '10r-22.2s5' asNumber.
+	sd := Number readFromString: '10r-22.2s5'.
 	self assert: ScaledDecimal identicalTo: sd class.
 	self assert: sd scale equals: 5.
 	self assert: '-22.20000s5' equals: sd printString
@@ -77,7 +77,7 @@ ScaledDecimalTest >> testAsNumberWithRadix [
 ScaledDecimalTest >> testAsNumberWithSuperfluousDecimalPoint [
 
 	| sd |
-	sd := '123.s2' asNumber.
+	sd := Number readFromString: '123.s2'.
 	self deny: ScaledDecimal == sd class description: 'It used to, but this syntax is not valid Smalltalk'
 ]
 
@@ -85,7 +85,7 @@ ScaledDecimalTest >> testAsNumberWithSuperfluousDecimalPoint [
 ScaledDecimalTest >> testAsNumberWithoutDecimalPoint [
 
 	| sd |
-	sd := '123s0' asNumber.
+	sd := Number readFromString: '123s0'.
 	self assert: ScaledDecimal identicalTo: sd class.
 	self assert: sd scale equals: 0.
 	self assert: '123s0' equals: sd printString
@@ -95,7 +95,7 @@ ScaledDecimalTest >> testAsNumberWithoutDecimalPoint [
 ScaledDecimalTest >> testAsNumberWithoutDecimalPoint2 [
 
 	| sd |
-	sd := '123s2' asNumber.
+	sd := Number readFromString: '123s2'.
 	self assert: ScaledDecimal identicalTo: sd class.
 	self assert: sd scale equals: 2.
 	self assert: '123.00s2' equals: sd printString
