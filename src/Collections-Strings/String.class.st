@@ -298,7 +298,7 @@ String class >> loremIpsum: size [
 
 	| words out |
 	words := (self loremIpsum findTokens: ' ,.') collect: [:each | each asLowercase].
-	(out := LimitedWriteStream on: (self new: size))
+	(out := LimitedStringWriteStream on: (self new: size))
 		limit: size - 2;
 		limitBlock: [
 			^ out originalContents
@@ -322,6 +322,22 @@ String class >> new: sizeRequested [
 	^ self == String
 		ifTrue: [ ByteString new: sizeRequested ]
 		ifFalse: [ self basicNew: sizeRequested ]
+]
+
+{ #category : 'instance creation' }
+String class >> new: newSize streamContents: blockWithArg [
+	"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption"
+
+	"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)"
+
+	| stream |
+	stream := StringWriteStream on: (self streamSpecies new: newSize).
+	blockWithArg value: stream.
+	"If the write position of stream is at the end of the internal buffer of stream (originalContents),
+	we can return it directly instead of making a copy as contents would do"
+	^ stream position = stream originalContents size
+		ifTrue: [ stream originalContents ]
+		ifFalse: [ stream contents ]
 ]
 
 { #category : 'private - accessing' }
@@ -415,6 +431,21 @@ String class >> space [
 	^ self with: Character space
 ]
 
+{ #category : 'as yet unclassified' }
+String class >> streamContents: blockWithArg limitedTo: sizeLimit [
+	"A variant of #streamContents: with a strict size limit"
+
+	"(String streamContents: [:s | 10 timesRepeat: [s nextPutAll: 'foo']] limitedTo: 9) >>> 'foofoofoo'"
+
+	| stream |
+	stream := LimitedStringWriteStream
+		on: (self streamSpecies new: (100 min: sizeLimit))
+		limit: sizeLimit
+		limitBlock: [ ^ stream contents ].
+	blockWithArg value: stream.
+	^ stream contents
+]
+
 { #category : 'primitives' }
 String class >> stringHash: aString initialHash: speciesHash [
 	| stringSize hash low |
@@ -464,7 +495,7 @@ String class >> with: aCharacter [
 	newCollection := aCharacter asInteger < 256
 		ifTrue:[ ByteString new: 1]
 		ifFalse:[ WideString new: 1].
-	newCollection at: 1 put: aCharacter.
+	newCollection privateAt: 1 put: aCharacter.
 	^newCollection
 ]
 
@@ -872,7 +903,7 @@ String >> capitalized [
 	| cap |
 	self isEmpty ifTrue: [ ^self copy ].
 	cap := self copy.
-	cap at: 1 put: (cap at: 1) asUppercase.
+	cap privateAt: 1 put: (cap at: 1) asUppercase.
 	^ cap
 ]
 
@@ -2731,7 +2762,7 @@ String >> uncapitalized [
 	| answer |
 	self ifEmpty: [ ^ self copy ].
 	answer := self copy.
-	answer at: 1 put: answer first asLowercase.
+	answer privateAt: 1 put: answer first asLowercase.
 	^ answer
 ]
 
@@ -2989,4 +3020,9 @@ String >> wordBefore: anIndex [
 				copyFrom: sep + 1
 				to: anIndex ]
 		ifFalse: [ String new ]
+]
+
+{ #category : 'writing' }
+String >> writeStream [
+	^ StringWriteStream on: self
 ]

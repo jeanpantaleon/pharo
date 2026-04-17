@@ -264,11 +264,14 @@ Character class >> space [
 
 { #category : 'special characters' }
 Character class >> specialCharacters [
-	^ '+-/\*~<>=@,%|&?!' , (String
-		   with: self centeredDot
-		   with: self divide
-		   with: self plusOrMinus
-		   with: self times)
+
+	" The last 4 are
+		- centeredDot
+		- divide
+		- plusOrMinus
+		- times"
+
+	^ '+-/\*~<>=@,%|&?!·÷±×'
 ]
 
 { #category : 'constants' }

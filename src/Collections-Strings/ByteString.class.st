@@ -92,7 +92,7 @@ ByteString class >> translate: aString from: start  to: stop  table: table [
 	<var: #aString  declareC: 'unsigned char *aString'>
 
 	start to: stop do: [ :i |
-		aString at: i put: (table at: (aString basicAt: i) + 1) ]
+		aString privateAt: i put: (table at: (aString basicAt: i) + 1) ]
 ]
 
 { #category : 'converting' }
@@ -143,7 +143,7 @@ ByteString >> byteAt: index [
 { #category : 'accessing' }
 ByteString >> byteAt: index put: value [
 	<primitive: 61>
-	self at: index put: value asCharacter.
+	self privateAt: index put: value asCharacter.
 	^value
 ]
 
@@ -181,6 +181,22 @@ ByteString >> compareWith: anotherString collated: order [
 		  ifFalse: [ 1 ]
 ]
 
+{ #category : 'accessing' }
+ByteString >> copyWith: newElement [
+	"Answer a copy of the receiver that is 1 bigger than the receiver and has
+	newElement at the last element."
+
+	| newIC |
+	newIC := self species new: self size + 1.
+	newIC
+		replaceFrom: 1
+		to: self size
+		with: self
+		startingAt: 1.
+	newIC privateAt: newIC size put: newElement.
+	^newIC
+]
+
 { #category : 'converting' }
 ByteString >> createSymbol [
 
@@ -191,6 +207,31 @@ ByteString >> createSymbol [
 ByteString >> findSubstring: key in: body startingAt: start matchTable: matchTable [
 
 	^ key findIn: body startingAt: start matchTable: matchTable
+]
+
+{ #category : 'accessing' }
+ByteString >> from: startIndex to: endIndex put: anObject [
+	"Put anObject in all indexes between startIndex
+	and endIndex. Very fast. Faster than to:do: for
+	more than 26 positions. Answer anObject"
+	"({#a. #b. #c. #d. #e} from: 3 to: 4 put: #x; yourself) >>> #(a b x x e)"
+
+	| written toWrite thisWrite |
+
+	startIndex > endIndex ifTrue: [^self].
+	self privateAt: startIndex put: anObject.
+	written := 1.
+	toWrite := endIndex - startIndex + 1.
+	[written < toWrite] whileTrue:
+		[
+			thisWrite := written min: toWrite - written.
+			self
+				replaceFrom: startIndex + written
+				to: startIndex + written + thisWrite - 1
+				with: self startingAt: startIndex.
+			written := written + thisWrite
+		].
+	^anObject
 ]
 
 { #category : 'testing' }
@@ -242,6 +283,29 @@ ByteString >> isOctetString [
 	"'abc' isOctetString >>> true"
 
 	^ true
+]
+
+{ #category : 'accessing' }
+ByteString >> privateAt: index put: aCharacter [
+	"Primitive. Store the Character in the field of the receiver indicated by
+	the index. Fail if the index is not an Integer or is out of bounds, or if
+	the argument is not a Character. Essential. See Object documentation
+	whatIsAPrimitive."
+
+	<primitive: 64>
+	aCharacter isCharacter
+		ifFalse:[^self errorImproperStore].
+	aCharacter isOctetCharacter ifFalse:[
+		"Convert to WideString"
+		self becomeForward: (WideString from: self).
+		^self at: index put: aCharacter.
+	].
+	index isInteger
+		ifTrue: [ (index between: 1 and: self size)
+				ifFalse: [ self errorSubscriptBounds: index ] ]
+		ifFalse: [self errorNonIntegerIndex].
+	self isReadOnlyObject
+		ifTrue: [ ^ self modificationForbiddenFor: #at:put: index: index value: aCharacter ]
 ]
 
 { #category : 'accessing' }
