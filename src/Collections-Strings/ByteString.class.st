@@ -143,7 +143,7 @@ ByteString >> byteAt: index [
 { #category : 'accessing' }
 ByteString >> byteAt: index put: value [
 	<primitive: 61>
-	self privateAt: index put: value asCharacter.
+	self at: index put: value asCharacter.
 	^value
 ]
 
