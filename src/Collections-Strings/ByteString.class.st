@@ -92,7 +92,7 @@ ByteString class >> translate: aString from: start  to: stop  table: table [
 	<var: #aString  declareC: 'unsigned char *aString'>
 
 	start to: stop do: [ :i |
-		aString privateAt: i put: (table at: (aString basicAt: i) + 1) ]
+		aString at: i put: (table at: (aString basicAt: i) + 1) ]
 ]
 
 { #category : 'converting' }
