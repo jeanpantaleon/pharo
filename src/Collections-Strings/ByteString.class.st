@@ -245,6 +245,29 @@ ByteString >> isOctetString [
 ]
 
 { #category : 'accessing' }
+ByteString >> privateAt: index put: aCharacter [
+	"Primitive. Store the Character in the field of the receiver indicated by
+	the index. Fail if the index is not an Integer or is out of bounds, or if
+	the argument is not a Character. Essential. See Object documentation
+	whatIsAPrimitive."
+
+	<primitive: 64>
+	aCharacter isCharacter
+		ifFalse:[^self errorImproperStore].
+	aCharacter isOctetCharacter ifFalse:[
+		"Convert to WideString"
+		self becomeForward: (WideString from: self).
+		^self at: index put: aCharacter.
+	].
+	index isInteger
+		ifTrue: [ (index between: 1 and: self size)
+				ifFalse: [ self errorSubscriptBounds: index ] ]
+		ifFalse: [self errorNonIntegerIndex].
+	self isReadOnlyObject
+		ifTrue: [ ^ self modificationForbiddenFor: #at:put: index: index value: aCharacter ]
+]
+
+{ #category : 'accessing' }
 ByteString >> replaceFrom: start to: stop with: replacement startingAt: repStart [
 	"Primitive. This destructively replaces elements from start to stop in the receiver starting at index, repStart, in the collection, replacement. Answer the receiver. Range checks are performed in the primitive only. Optional. See Object documentation whatIsAPrimitive."
 	<primitive: 105>
