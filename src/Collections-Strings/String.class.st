@@ -324,6 +324,22 @@ String class >> new: sizeRequested [
 		ifFalse: [ self basicNew: sizeRequested ]
 ]
 
+{ #category : 'instance creation' }
+String class >> new: newSize streamContents: blockWithArg [
+	"A variant of #streamContents: where the initial or even final size is given to optimize memory consumption"
+
+	"(Array new: 3 streamContents: [ :out | 3 timesRepeat: [ out nextPut: 42 ] ]) >>> #(42 42 42)"
+
+	| stream |
+	stream := StringWriteStream on: (self streamSpecies new: newSize).
+	blockWithArg value: stream.
+	"If the write position of stream is at the end of the internal buffer of stream (originalContents),
+	we can return it directly instead of making a copy as contents would do"
+	^ stream position = stream originalContents size
+		ifTrue: [ stream originalContents ]
+		ifFalse: [ stream contents ]
+]
+
 { #category : 'private - accessing' }
 String class >> newAsciiOrder [
 	^ (0 to: 255) as: ByteArray
