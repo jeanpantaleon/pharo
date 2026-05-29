@@ -464,7 +464,7 @@ String class >> with: aCharacter [
 	newCollection := aCharacter asInteger < 256
 		ifTrue:[ ByteString new: 1]
 		ifFalse:[ WideString new: 1].
-	newCollection at: 1 put: aCharacter.
+	newCollection privateAt: 1 put: aCharacter.
 	^newCollection
 ]
 
