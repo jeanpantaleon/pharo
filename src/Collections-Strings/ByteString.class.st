@@ -209,6 +209,31 @@ ByteString >> findSubstring: key in: body startingAt: start matchTable: matchTab
 	^ key findIn: body startingAt: start matchTable: matchTable
 ]
 
+{ #category : 'accessing' }
+ByteString >> from: startIndex to: endIndex put: anObject [
+	"Put anObject in all indexes between startIndex
+	and endIndex. Very fast. Faster than to:do: for
+	more than 26 positions. Answer anObject"
+	"({#a. #b. #c. #d. #e} from: 3 to: 4 put: #x; yourself) >>> #(a b x x e)"
+
+	| written toWrite thisWrite |
+
+	startIndex > endIndex ifTrue: [^self].
+	self privateAt: startIndex put: anObject.
+	written := 1.
+	toWrite := endIndex - startIndex + 1.
+	[written < toWrite] whileTrue:
+		[
+			thisWrite := written min: toWrite - written.
+			self
+				replaceFrom: startIndex + written
+				to: startIndex + written + thisWrite - 1
+				with: self startingAt: startIndex.
+			written := written + thisWrite
+		].
+	^anObject
+]
+
 { #category : 'testing' }
 ByteString >> hasWideCharacterFrom: start to: stop [
 	"Only WideStrings contain these characters"
