@@ -75,3 +75,57 @@ ImmutableStringTest >> testConcatenationWithEmpty [
 	"size : "
 	self assert: result size = ( self secondCollection size)
 ]
+
+{ #category : 'running' }
+ImmutableStringTest >> testImmutableImmutableConcatenate [
+	| a b |
+	a := 'a'.
+	a beWritableObject.
+	ImmutableByteString adoptInstance: a.
+	
+	b := 'b'.
+	b	beWritableObject.
+	ImmutableByteString adoptInstance: b.
+	self assert: (a , b) class equals: ImmutableByteString.
+	self assert: a class equals: ImmutableByteString
+]
+
+{ #category : 'running' }
+ImmutableStringTest >> testImmutablePlainConcatenate [
+	| a b |
+	a := 'a'.
+	a beWritableObject.
+	ImmutableByteString adoptInstance: a.
+	
+	b := 'b'.
+	b	beWritableObject.
+	ByteString adoptInstance: b.
+	self assert: (a , b) class equals: ImmutableByteString.
+	self assert: a class equals: ImmutableByteString
+]
+
+{ #category : 'running' }
+ImmutableStringTest >> testPlainImmutableConcatenate [
+	| a b |
+	a := 'a'.
+	a beWritableObject.
+	ByteString adoptInstance: a.
+	b := 'b'.
+	b	beWritableObject.
+	ImmutableByteString adoptInstance: b.
+	self assert: (a , b) class equals: ByteString.
+	self assert: a class equals: ByteString
+]
+
+{ #category : 'running' }
+ImmutableStringTest >> testPlainPlainConcatenate [
+	| a b |
+	a := 'a'.
+	a beWritableObject.
+	ByteString adoptInstance: a.
+	b := 'b'.
+	b	beWritableObject.
+	ByteString adoptInstance: b.
+	self assert: (a , b) class equals: ByteString.
+	self assert: a class equals: ByteString
+]
