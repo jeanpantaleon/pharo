@@ -134,6 +134,13 @@ ByteString >> at: index put: aCharacter [
 		ifTrue: [ ^ self modificationForbiddenFor: #at:put: index: index value: aCharacter ]
 ]
 
+{ #category : 'copying' }
+ByteString >> beImmutable [
+
+	ImmutableByteString adoptInstance: self.
+	^ self
+]
+
 { #category : 'accessing' }
 ByteString >> byteAt: index [
 	<primitive: 60>
