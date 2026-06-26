@@ -137,7 +137,9 @@ ByteString >> at: index put: aCharacter [
 { #category : 'copying' }
 ByteString >> beImmutable [
 
+	self beWritableObject.
 	ImmutableByteString adoptInstance: self.
+	self beReadOnlyObject.
 	^ self
 ]
 

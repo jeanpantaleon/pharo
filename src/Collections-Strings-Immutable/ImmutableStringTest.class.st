@@ -24,6 +24,19 @@ ImmutableStringTest >> firstCollection [
 	^ nonEmpty5ElementsSorted
 ]
 
+{ #category : 'as yet unclassified' }
+ImmutableStringTest >> immutableString [
+	| s |
+	s := 'immutable'.
+	^ s beImmutable
+]
+
+{ #category : 'as yet unclassified' }
+ImmutableStringTest >> mutableString [
+
+	^ 'mutable'
+]
+
 { #category : 'accessing' }
 ImmutableStringTest >> secondCollection [
 	"Return a collection that will be the second part of the concatenation"
@@ -45,87 +58,35 @@ ImmutableStringTest >> setUp [
 ]
 
 { #category : 'tests' }
-ImmutableStringTest >> testConcatenation [
-	| result index |
-	result:= self firstCollection , self secondCollection .
-	"first part : "
-	index := 1.
-	self firstCollection do:
-		[:each |
-		self assert: (self firstCollection at: index)=each.
-		index := index+1.].
-	"second part : "
-	1 to: self secondCollection size do:
-		[:i |
-		self assert: (self secondCollection at:i)= (result at:index).
-		index:=index+1].
-	"size : "
-	self assert: result size = (self firstCollection size + self secondCollection size)
-]
+ImmutableStringTest >> testAtPutImmutableThrowsError [
 
-{ #category : 'tests' }
-ImmutableStringTest >> testConcatenationWithEmpty [
-	| result |
-	result:= self empty,self secondCollection .
-
-	1 to: self secondCollection size do:
-		[:i |
-		self assert: (self secondCollection at:i)= (result at:i).
-		].
-	"size : "
-	self assert: result size = ( self secondCollection size)
+	self
+		should: [ self immutableString at: 1 put: $a ]
+		raise: ModificationForbidden
+		with: [ :error |
+		self assert: error messageText equals: ' ''immutable'' is read-only, hence its field 1 cannot be modified with $a' ]
 ]
 
 { #category : 'running' }
 ImmutableStringTest >> testImmutableImmutableConcatenate [
-	| a b |
-	a := 'a'.
-	a beWritableObject.
-	ImmutableByteString adoptInstance: a.
-	
-	b := 'b'.
-	b	beWritableObject.
-	ImmutableByteString adoptInstance: b.
-	self assert: (a , b) class equals: ImmutableByteString.
-	self assert: a class equals: ImmutableByteString
+
+	self assert: (self immutableString , self immutableString) class equals: ImmutableByteString
 ]
 
 { #category : 'running' }
 ImmutableStringTest >> testImmutablePlainConcatenate [
-	| a b |
-	a := 'a'.
-	a beWritableObject.
-	ImmutableByteString adoptInstance: a.
-	
-	b := 'b'.
-	b	beWritableObject.
-	ByteString adoptInstance: b.
-	self assert: (a , b) class equals: ImmutableByteString.
-	self assert: a class equals: ImmutableByteString
+
+	self assert: (self immutableString , self mutableString) class equals: ImmutableByteString
 ]
 
 { #category : 'running' }
 ImmutableStringTest >> testPlainImmutableConcatenate [
-	| a b |
-	a := 'a'.
-	a beWritableObject.
-	ByteString adoptInstance: a.
-	b := 'b'.
-	b	beWritableObject.
-	ImmutableByteString adoptInstance: b.
-	self assert: (a , b) class equals: ByteString.
-	self assert: a class equals: ByteString
+
+	self assert: (self mutableString , self immutableString) class equals: ByteString
 ]
 
 { #category : 'running' }
 ImmutableStringTest >> testPlainPlainConcatenate [
-	| a b |
-	a := 'a'.
-	a beWritableObject.
-	ByteString adoptInstance: a.
-	b := 'b'.
-	b	beWritableObject.
-	ByteString adoptInstance: b.
-	self assert: (a , b) class equals: ByteString.
-	self assert: a class equals: ByteString
+
+	self assert: (self mutableString , self mutableString) class equals: ByteString
 ]

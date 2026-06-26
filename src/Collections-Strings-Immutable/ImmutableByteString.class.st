@@ -24,6 +24,12 @@ ImmutableByteString >> , otherCollection [
 	^ result
 ]
 
+{ #category : 'accessing' }
+ImmutableByteString >> at: index put: aCharacter [
+
+	self modificationForbiddenFor: #at:put: index: index value: aCharacter
+]
+
 { #category : 'copying' }
 ImmutableByteString >> beMutable [
 
