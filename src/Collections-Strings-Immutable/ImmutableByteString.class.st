@@ -38,6 +38,12 @@ ImmutableByteString >> beMutable [
 	^ self
 ]
 
+{ #category : 'accessing' }
+ImmutableByteString >> byteAt: index put: aCharacter [
+
+	self modificationForbiddenFor: #byteAt:put: index: index value: aCharacter
+]
+
 { #category : 'copying' }
 ImmutableByteString >> copyReplaceFrom: start to: stop with: replacementCollection [
 	"Answer a copy of the receiver satisfying the following conditions: If
@@ -69,4 +75,10 @@ ImmutableByteString >> copyReplaceFrom: start to: stop with: replacementCollecti
 			with: self
 			startingAt: stop + 1].
 	^ newSequenceableCollection
+]
+
+{ #category : 'accessing' }
+ImmutableByteString >> replaceFrom: start to: stop with: replacement startingAt: repStart [
+
+	self modificationForbiddenFor: #replaceFrom:to:with:startingAt: value: replacement
 ]
